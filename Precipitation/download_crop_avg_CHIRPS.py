@@ -67,8 +67,11 @@ def unzip_tiff(chirps_file):
 # Crop the files to the desired area, given a shapefile and the path to such file
 
 def crop_tif(rast):
-    shape_path = "C:\\Users\\Ryan\\Documents\\db_project_2_21\\Shapes\\compiled_shapes\\"
-    shape_file_name = 'compiled.shp'
+
+    # Include the path to the shapefile & the shapefile name
+    
+    shape_path = ""
+    shape_file_name = ''
     shape_file = os.path.join(shape_path, shape_file_name)
     shapes = gpd.read_file(shape_file)
     polygons = np.array(shapes['geometry'])
