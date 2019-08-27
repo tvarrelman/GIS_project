@@ -4,7 +4,7 @@ The **download_crop_avg_CHIRPS.py** scipt is meant to be a comprehensive script 
 
 **1. get_file_list():** This function scrapes the CHIRPS ftp page, and retrieves a list of daily rasters given a certain year and month. This code was originally obtained from (https://github.com/datamission/WFP/blob/master/Datasets/CHIRPS/get_chirps.py)
 
-**2. download_files():** Takes the file list retrieved from the get_file_list function, and downloads the files. This code was originally obtained from (original source https://github.com/datamission/WFP/blob/master/Datasets/CHIRPS/get_chirps.py), however modified to be able to handle a large number of url requests.
+**2. download_files():** Takes the file list retrieved from the get_file_list function, and downloads the files. This code was originally obtained from (https://github.com/datamission/WFP/blob/master/Datasets/CHIRPS/get_chirps.py), however has been modified to be able to handle a large number of url requests.
 
 **3. unzip_tif():** The download_files() function downloads the rasters in compressed form, so this function unzips the files, and writes the .tif files.
 
