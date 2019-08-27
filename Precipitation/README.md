@@ -12,4 +12,4 @@ The **download_crop_avg_CHIRPS.py** scipt is meant to be a comprehensive script 
 
 **5. monthly_average():** Takes the daily precipitation rasters for a given month (given they have been downloaded), and creates a raster that is a monthly average.
 
-The code required that the user inputs their desired shapefile, the paths to the folders where the daily and monthly rasters should be saved, as well as the month and year that the user wishes to download data for. 
+The code requires that the user inputs their desired shapefile and path, the paths to the folders where the daily and monthly rasters should be saved, as well as the month and year that the user wishes to download data for. 
