@@ -107,7 +107,13 @@ def monthly_average(date, file_path, monthly_file_path):
             dst.write(mean_data, 1)
 
 
-daily_path = "C:\\Users\\Ryan\\Documents\\testing_code\\"
-monthly_path = "C:\\Users\\Ryan\\Documents\\monthly _chirps_test\\"
+# Path to the folder where the daily precip will be saved
+
+daily_path = ""
+
+# Path to the folder where the monthly averaged precip will be saved
+
+monthly_path = ""
+
 get_file_list('2019.07', daily_path)
 monthly_average('2019.07', daily_path, monthly_path)
