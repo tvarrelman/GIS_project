@@ -15,13 +15,15 @@ import rasterio.mask
 from shapely.ops import cascaded_union
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # Reads a list of precipitation files from the CHIRPS web-page
-# (original source https://github.com/datamission/WFP/blob/master/Datasets/CHIRPS/get_chirps.py)
 
 def get_file_list(date, daily_file_path):
     year = date[0:4]
+    # The daily precip rasters are stored in folders according to year.
+    # Here we add the year of interest to the url string. 
     url = 'ftp://ftp.chg.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
     req = urllib.request.Request(url)
     response = urllib.request.urlopen(req)
@@ -31,13 +33,14 @@ def get_file_list(date, daily_file_path):
     firstsplit = page.split('\r\n')
     secondsplit = [x.split(' ') for x in firstsplit]
     flatlist = [item for sublist in secondsplit for item in sublist]
+    #We then subset the list of daily files for only those that include the dates of interest.
     chirpsfiles = [x for x in flatlist if 'chirps-v2.0.' + date in x]
     # Calls the function to download the rasters
+    # We feed the list of files that we want to download to the download_files functions
     download_files(chirpsfiles, year, daily_file_path)
 
 
 # Download the CHIRP precipitation files
-# (original source https://github.com/datamission/WFP/blob/master/Datasets/CHIRPS/get_chirps.py)
 
 def download_files(chirpsfiles, year, daily_file_path):
     base = 'ftp://ftp.chg.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
@@ -48,7 +51,10 @@ def download_files(chirpsfiles, year, daily_file_path):
                 open(chirps_file, 'wb').write(response.read())
         except urllib.error.URLError:
             return download_files(chirpsfiles, year)
-        unzip_tiff(chirps_file)
+        # We used to have to use the unzip function because the chirps files were stored in compressed folders.
+        # Starting in May, the files are no longer compressed, so we skip straight to the crop_tif function.
+       # unzip_tiff(chirps_file)
+        crop_tif(chirps_file)
 
 
 # The files are compressed so we need to unzip them
@@ -67,15 +73,14 @@ def unzip_tiff(chirps_file):
 # Crop the files to the desired area, given a shapefile and the path to such file
 
 def crop_tif(rast):
-
-    # Include the path to the shapefile & the shapefile name
-    
-    shape_path = ""
-    shape_file_name = ''
-    shape_file = os.path.join(shape_path, shape_file_name)
-    shapes = gpd.read_file(shape_file)
-    polygons = np.array(shapes['geometry'])
-    res_union = gpd.GeoSeries(cascaded_union(polygons))
+    #Provide a path to the West Africa Shapefile
+    shape_path='/WAfricaSF/'
+    shapes=gpd.read_file(shape_path+'foc.shp')
+    shapes_df=shapes['geometry']
+    shapes_df=shapes.buffer(0.0001) 
+    # Taking a union of the geometries makes it so we have one continuous shape to crop to.
+    # Otherwise, we will crop country boundary lines into our rasters.
+    res_union = gpd.GeoSeries(cascaded_union(shapes_df))
     with rasterio.open(rast) as src:
         out_image, out_transform = rasterio.mask.mask(src, res_union[0], crop=True, nodata=-9999, all_touched=True)
         out_image = out_image.astype('float32')
@@ -91,7 +96,7 @@ def crop_tif(rast):
 
 
 # Create a tiff w/ the monthly averaged precipitation
-
+            
 def monthly_average(date, file_path, monthly_file_path):
     file_repo = os.listdir(file_path)
     files = [f for f in file_repo if 'chirps-v2.0.' + date in f]
@@ -109,14 +114,14 @@ def monthly_average(date, file_path, monthly_file_path):
         with rasterio.open(monthly_file_path + new_file, "w", **out_meta) as dst:
             dst.write(mean_data, 1)
 
-
-# Path to the folder where the daily precip will be saved
-
+# Path where the daily files will be solved
 daily_path = ""
-
-# Path to the folder where the monthly averaged precip will be saved
-
+# Path where the monthly averaged precip is saved
 monthly_path = ""
 
-get_file_list('2019.07', daily_path)
-monthly_average('2019.07', daily_path, monthly_path)
+#Provide the date and month for the precip that you want
+get_file_list('2020.08', daily_path)
+# Run the monthly average function if you want raster that is the monhtly average precip
+monthly_average('2020.08', daily_path, monthly_path)
+            
+            
