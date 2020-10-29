@@ -17,9 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 # Reads a list of precipitation files from the CHIRPS web-page
-
 def get_file_list(date, daily_file_path):
     year = date[0:4]
     # The daily precip rasters are stored in folders according to year.
@@ -39,9 +37,7 @@ def get_file_list(date, daily_file_path):
     # We feed the list of files that we want to download to the download_files functions
     download_files(chirpsfiles, year, daily_file_path)
 
-
 # Download the CHIRP precipitation files
-
 def download_files(chirpsfiles, year, daily_file_path):
     base = 'ftp://ftp.chg.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
     for file_name in chirpsfiles:
@@ -56,9 +52,7 @@ def download_files(chirpsfiles, year, daily_file_path):
        # unzip_tiff(chirps_file)
         crop_tif(chirps_file)
 
-
 # The files are compressed so we need to unzip them
-
 def unzip_tiff(chirps_file):
     unzip = gzip.open(chirps_file, 'rb')
     unziptiff = open(chirps_file.split('.gz')[0], 'wb')
@@ -69,9 +63,7 @@ def unzip_tiff(chirps_file):
     # Call the cropping function
     crop_tif(chirps_file.split('.gz')[0])
 
-
 # Crop the files to the desired area, given a shapefile and the path to such file
-
 def crop_tif(rast):
     #Provide a path to the West Africa Shapefile
     shape_path='/WAfricaSF/'
@@ -94,9 +86,7 @@ def crop_tif(rast):
         with rasterio.open(rast, "w", **out_meta) as dst:
             dst.write(out_image)
 
-
-# Create a tiff w/ the monthly averaged precipitation
-            
+# Create a tiff w/ the monthly averaged precipitation            
 def monthly_average(date, file_path, monthly_file_path):
     file_repo = os.listdir(file_path)
     files = [f for f in file_repo if 'chirps-v2.0.' + date in f]
@@ -113,6 +103,7 @@ def monthly_average(date, file_path, monthly_file_path):
         out_meta = src.meta.copy()
         with rasterio.open(monthly_file_path + new_file, "w", **out_meta) as dst:
             dst.write(mean_data, 1)
+
 
 # Path where the daily files will be solved
 daily_path = ""
