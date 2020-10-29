@@ -104,15 +104,14 @@ def monthly_average(date, file_path, monthly_file_path):
         with rasterio.open(monthly_file_path + new_file, "w", **out_meta) as dst:
             dst.write(mean_data, 1)
 
-
-# Path where the daily files will be solved
-daily_path = ""
-# Path where the monthly averaged precip is saved
-monthly_path = ""
-
-#Provide the date and month for the precip that you want
-get_file_list('2020.08', daily_path)
-# Run the monthly average function if you want raster that is the monhtly average precip
-monthly_average('2020.08', daily_path, monthly_path)
+if __name__ == "__main__":
+    # Path where the daily files will be solved
+    daily_path = ""
+    # Path where the monthly averaged precip is saved
+    monthly_path = ""
+    # Provide the date and month for the precip that you want
+    get_file_list('2020.08', daily_path)
+    # Run the monthly average function if you want raster that is the monhtly average precip
+    monthly_average('2020.08', daily_path, monthly_path)
             
             
