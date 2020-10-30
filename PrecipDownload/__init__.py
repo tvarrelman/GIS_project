@@ -22,24 +22,25 @@ def get_file_list(date, daily_file_path):
     year = date[0:4]
     # The daily precip rasters are stored in folders according to year.
     # Here we add the year of interest to the url string. 
-    url = 'ftp://ftp.chg.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
+    url = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/' + year + '/'
     req = urllib.request.Request(url)
     response = urllib.request.urlopen(req)
     the_page = response.read()
-    page = str(BeautifulSoup(the_page, features="lxml"))
+    page = BeautifulSoup(the_page, features="lxml")
     response.close()
-    firstsplit = page.split('\r\n')
-    secondsplit = [x.split(' ') for x in firstsplit]
-    flatlist = [item for sublist in secondsplit for item in sublist]
-    #We then subset the list of daily files for only those that include the dates of interest.
-    chirpsfiles = [x for x in flatlist if 'chirps-v2.0.' + date in x]
+    link_list = []
+    # Find all of the links on the page
+    for link in page.find_all('a', href=True):
+        link_list.append(link['href'])
+    # We then subset the link list to only inlcude links with the chirps filename.
+    chirpsfiles = [x for x in link_list if 'chirps-v2.0.' + date in x]
     # Calls the function to download the rasters
     # We feed the list of files that we want to download to the download_files functions
     download_files(chirpsfiles, year, daily_file_path)
 
 # Download the CHIRP precipitation files
 def download_files(chirpsfiles, year, daily_file_path):
-    base = 'ftp://ftp.chg.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
+    base = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/' + year + '/'
     for file_name in chirpsfiles:
         chirps_file = os.path.join(daily_file_path + file_name)
         try:
