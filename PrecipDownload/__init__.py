@@ -16,7 +16,7 @@ from shapely.ops import cascaded_union
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import argparse
 # Reads a list of precipitation files from the CHIRPS web-page
 def get_file_list(date, daily_file_path):
     year = date[0:4]
@@ -104,14 +104,27 @@ def monthly_average(date, file_path, monthly_file_path):
         with rasterio.open(monthly_file_path + new_file, "w", **out_meta) as dst:
             dst.write(mean_data, 1)
 
+parser = argparse.ArgumentParser(description='Parameters required to run the PrecipDownload program')
+parser.add_argument('-dfp', '--daily_file_path', required=True, help='directory where daily precip rasters will be stored')
+parser.add_argument('-mfp', '--monthly_file_path', required=True, help='directpry where a monthly avg. precip raster will be stored')
+parser.add_argument('-y', '--year', required=True, help='year for data request')
+parser.add_argument('-m', '--month', required=True, help='month for data request')
+args = parser.parse_args()
+
+try:
+    daily_path = args.daily_file_path
+    monthly_path = args.monthly_file_path
+    year = args.year
+    month = args.month
+    date = year + '.' + month
+    print(date)
+except IOError as ioe:
+    print(ioe)
+
 if __name__ == "__main__":
-    # Path where the daily files will be solved
-    daily_path = ""
-    # Path where the monthly averaged precip is saved
-    monthly_path = ""
-    # Provide the date and month for the precip that you want
-    get_file_list('2020.08', daily_path)
+    # Running this function will download and crop daily precip rasters
+    get_file_list(date, daily_path)
     # Run the monthly average function if you want raster that is the monhtly average precip
-    monthly_average('2020.08', daily_path, monthly_path)
+    monthly_average(date, daily_path, monthly_path)
             
             
