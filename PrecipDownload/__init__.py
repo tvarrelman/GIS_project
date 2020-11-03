@@ -14,9 +14,10 @@ import geopandas as gpd
 import rasterio.mask
 from shapely.ops import cascaded_union
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
+import warnings
+
 # Reads a list of precipitation files from the CHIRPS web-page
 def get_file_list(date, daily_file_path):
     year = date[0:4]
@@ -48,8 +49,8 @@ def download_files(chirpsfiles, year, daily_file_path):
                 open(chirps_file, 'wb').write(response.read())
         except urllib.error.URLError:
             return download_files(chirpsfiles, year)
-        # We used to have to use the unzip function because the chirps files were stored in compressed folders.
-        # Starting in May, the files are no longer compressed, so we skip straight to the crop_tif function.
+        # If the raster file is zipped, we call the unzip_tiff function.
+        # Else, we crop the downloaded raster file.
         if chirps_file.endswith('.gz'):
             unzip_tiff(chirps_file)
         else:
@@ -99,7 +100,10 @@ def monthly_average(date, file_path, monthly_file_path):
         data = raster.read(1).astype('float32')
         data[data < 0] = np.nan
         data_list.append(data)
-    mean_data = np.nanmean(data_list, axis=0)
+    # Catch RuntimeWarnings triggered by averaging empty slices.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        mean_data = np.nanmean(data_list, axis=0)
     mean_data[np.isnan(mean_data)] = -9999
     new_file = 'chirps-v2.0.' + date + '.01.tif'
     with rasterio.open(file_path + files[0]) as src:
@@ -125,7 +129,7 @@ except IOError as ioe:
 
 if __name__ == "__main__":
     # Running this function will download and crop daily precip rasters
-    get_file_list(date, daily_path)
+    # get_file_list(date, daily_path)
     # Run the monthly average function if you want raster that is the monhtly average precip
     monthly_average(date, daily_path, monthly_path)
             
