@@ -129,7 +129,7 @@ except IOError as ioe:
 
 if __name__ == "__main__":
     # Running this function will download and crop daily precip rasters
-    # get_file_list(date, daily_path)
+    get_file_list(date, daily_path)
     # Run the monthly average function if you want raster that is the monhtly average precip
     monthly_average(date, daily_path, monthly_path)
             
