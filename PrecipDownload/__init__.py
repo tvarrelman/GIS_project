@@ -20,9 +20,11 @@ import argparse
 # Reads a list of precipitation files from the CHIRPS web-page
 def get_file_list(date, daily_file_path):
     year = date[0:4]
+    #print(year)
     # The daily precip rasters are stored in folders according to year.
     # Here we add the year of interest to the url string. 
-    url = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/' + year + '/'
+    url = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
+    #print(url)
     req = urllib.request.Request(url)
     response = urllib.request.urlopen(req)
     the_page = response.read()
@@ -40,7 +42,7 @@ def get_file_list(date, daily_file_path):
 
 # Download the CHIRP precipitation files
 def download_files(chirpsfiles, year, daily_file_path):
-    base = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/' + year + '/'
+    base = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
     for file_name in chirpsfiles:
         chirps_file = os.path.join(daily_file_path + file_name)
         try:
@@ -67,7 +69,7 @@ def unzip_tiff(chirps_file):
 # Crop the files to the desired area, given a shapefile and the path to such file
 def crop_tif(rast):
     #Provide a path to the West Africa Shapefile
-    shape_path='/WAfricaSF/'
+    shape_path= '../WAfricaSF/'
     shapes=gpd.read_file(shape_path+'foc.shp')
     shapes_df=shapes['geometry']
     shapes_df=shapes.buffer(0.0001) 
@@ -118,7 +120,7 @@ try:
     year = args.year
     month = args.month
     date = year + '.' + month
-    print(date)
+    #print(date)
 except IOError as ioe:
     print(ioe)
 
