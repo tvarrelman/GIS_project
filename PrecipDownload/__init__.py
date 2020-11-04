@@ -95,8 +95,8 @@ def monthly_average(date, file_path, monthly_file_path):
     file_repo = os.listdir(file_path)
     files = [f for f in file_repo if 'chirps-v2.0.' + date in f]
     data_list = []
-    for i in range(0, len(files)):
-        raster = rasterio.open(file_path + files[i])
+    for rast_file in files:
+        raster = rasterio.open(file_path + rast_file)
         data = raster.read(1).astype('float32')
         data[data < 0] = np.nan
         data_list.append(data)
