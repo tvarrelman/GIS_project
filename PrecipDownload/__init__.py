@@ -26,12 +26,12 @@ def get_file_list(date, daily_file_path):
     url = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
     req = urllib.request.Request(url)
     response = urllib.request.urlopen(req)
-    the_page = response.read()
-    page = BeautifulSoup(the_page, features="lxml")
+    page = response.read()
+    pretty_page = BeautifulSoup(page, features="lxml")
     response.close()
     link_list = []
     # Find all of the links on the page
-    for link in page.find_all('a', href=True):
+    for link in pretty_page.find_all('a', href=True):
         link_list.append(link['href'])
     # We then subset the link list to only inlcude links with the chirps filename.
     chirpsfiles = [x for x in link_list if 'chirps-v2.0.' + date in x]
@@ -41,11 +41,11 @@ def get_file_list(date, daily_file_path):
 
 # Download the CHIRP precipitation files
 def download_files(chirpsfiles, year, daily_file_path):
-    base = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
+    url = 'https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/' + year + '/'
     for file_name in chirpsfiles:
         chirps_file = os.path.join(daily_file_path + file_name)
         try:
-            with urllib.request.urlopen(base + file_name) as response:
+            with urllib.request.urlopen(url + file_name) as response:
                 open(chirps_file, 'wb').write(response.read())
         except urllib.error.URLError:
             return download_files(chirpsfiles, year)
