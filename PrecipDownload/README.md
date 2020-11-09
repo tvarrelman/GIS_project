@@ -12,4 +12,8 @@ The **DownloadPrecip/__init__.py** scipt was developed to download daily and mon
 
 **5. monthly_average():** Takes the daily precipitation rasters for a given month (given that they have been downloaded), and creates a raster that is a monthly average. The units for this raster are avg. mm/day.
 
-The code requires that the user input the paths to where the files will be saved, as well as the year and month that the user wishes to download data for. 
+The code requires that the user input the paths to where the files will be saved (-dfp for daily and -mfp monthly), as well as the year (-y) and month (-m)  that the user wishes to download data for. Here is an example of how to run the script from the command line: 
+
+```console
+$ python PrecipDownload/__init__.py -dfp '/DailyTest/', -mfp '/MonthlyTest/', -y '2020', -m '09'
+```
